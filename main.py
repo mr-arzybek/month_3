@@ -49,13 +49,15 @@ async def picture(message: types.Message):
 
 @dp.message_handler()
 async def all(message: types.Message):
-    c = len(message.text.split(" "))
+    c = len(message.text)
     if c > 3:
         await message.answer(
-            f"{message.text.upper()}"
+            message.text.upper()
         )
     else:
-        pass
+        await message.answer(
+            message.text
+        )
 
 
 executor.start_polling(dp)
