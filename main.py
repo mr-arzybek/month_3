@@ -1,66 +1,32 @@
-from aiogram import Bot, Dispatcher, executor, types
-from dotenv import load_dotenv
-from os import getenv
-import random
+from aiogram import executor
+from aiogram.dispatcher.filters import Text
+from config import dp
+from handlers.basic import (
+    cmd_start,
+    cmd_help,
+    cmd_myinfo,
+    cmd_picture
+)
+from handlers.jobs import (
+show_jobs,
+show_courier,
+show_collector,
+show_merchandiser
+)
 
-load_dotenv()
-bot = Bot(token=getenv('BOT_TOKEN'))
-dp = Dispatcher(bot)
-
-
-@dp.message_handler(commands=["start"])
-async def start(message: types.Message):
-    await message.answer(
-        f"Hello {message.from_user.full_name}"
-    )
-
-
-@dp.message_handler(commands=["help"])
-async def help(message: types.Message):
-    await message.answer(
-        f"""
-
-        /start - приветствует по имени
-        /help - показывает список команд
-        /myinfo - отправляет пользователю его данные(id, first_name, username)
-        /picture - отправляет слуайную картинку
-
-        """
-    )
-
-
-@dp.message_handler(commands=["myinfo"])
-async def myinfo(message: types.Message):
-    await message.answer(
-        f"ID         {message.from_user.id}\n"
-        f"FIRST_NAME {message.from_user.first_name}\n"
-        f"USER_NAME  {message.from_user.username}\n"
-    )
-
-
-@dp.message_handler(commands=["picture"])
-async def picture(message: types.Message):
-    img = ["img/img_1.png", "img/img_2.png", "img/img_3.png"]
-    photo = open(random.choice(img), "rb")
-    await message.answer_photo(
-        photo
-    )
-
-
-@dp.message_handler()
-async def all(message: types.Message):
-    c = len(message.text)
-    if c > 3:
-        await message.answer(
-            message.text.upper()
-        )
-    else:
-        await message.answer(
-            message.text
-        )
-
-
-executor.start_polling(dp)
+if __name__ == "__main__":
+    dp.register_message_handler(cmd_start, commands=["start"])
+    dp.register_message_handler(cmd_help, commands=["help"])
+    dp.register_message_handler(cmd_myinfo, commands=["myinfo"])
+    dp.register_message_handler(cmd_myinfo, commands=["myinfo"])
+    dp.register_message_handler(cmd_picture, commands=["picture"])
+    # dp.register_message_handler(show_jobs, commands=["jobs"])
+    dp.register_callback_query_handler(show_jobs, Text(equals="jobs"))
+    dp.register_message_handler(show_courier, Text(startswith="Курьером"))
+    dp.register_message_handler(show_collector, Text(startswith="Сборщиком"))
+    dp.register_message_handler(show_merchandiser, Text(startswith="товароведом"))
+    print('hello')
+    executor.start_polling(dp)
 
 
 
