@@ -23,6 +23,7 @@ kb.add(
 
 async def show_jobs(call: types.CallbackQuery):
     await call.message.answer(
+        text="Мы можем вам подобрать работу",
         reply_markup=kb
     )
 
