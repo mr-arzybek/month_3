@@ -1,30 +1,22 @@
-from aiogram import executor
+from aiogram import executor, types
 from aiogram.dispatcher.filters import Text
 from config import dp
-from handlers.basic import (
-    cmd_start,
-    cmd_help,
-    cmd_myinfo,
-    cmd_picture
+from handlers.admin import (
+on_user_joined,
+filter_messages,
+cmd_ban
 )
-from handlers.jobs import (
-show_jobs,
-show_courier,
-show_collector,
-show_merchandiser
-)
+from handlers.filters import IsAdminFilter
+
+
+
+
 
 if __name__ == "__main__":
-    dp.register_message_handler(cmd_start, commands=["start"])
-    dp.register_message_handler(cmd_help, commands=["help"])
-    dp.register_message_handler(cmd_myinfo, commands=["myinfo"])
-    dp.register_message_handler(cmd_myinfo, commands=["myinfo"])
-    dp.register_message_handler(cmd_picture, commands=["picture"])
-    # dp.register_message_handler(show_jobs, commands=["jobs"])
-    dp.register_callback_query_handler(show_jobs, Text(equals="jobs"))
-    dp.register_message_handler(show_courier, Text(startswith="Курьером"))
-    dp.register_message_handler(show_collector, Text(startswith="Сборщиком"))
-    dp.register_message_handler(show_merchandiser, Text(startswith="товароведом"))
+    dp.filters_factory.bind(IsAdminFilter)
+    dp.register_message_handlers(on_user_joined, content_types=["new_chat_members"])
+    dp.register_message_handler(filter_messages)
+    dp.register_message_handler(cmd_ban, is_admin=True, commands=['ban'], commands_prefix='!/')
     print('hello')
     executor.start_polling(dp)
 
